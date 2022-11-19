@@ -9,9 +9,23 @@ const pluginSyntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
 const pluginNavigation = require("@11ty/eleventy-navigation");
 
 module.exports = function(eleventyConfig) {
-  // Copy the `img` and `css` folders to the output
-  eleventyConfig.addPassthroughCopy("img");
-  eleventyConfig.addPassthroughCopy("css");
+  /* Rebuild when any of the files are changed */
+  eleventyConfig.addWatchTarget("./src/");
+
+  eleventyConfig.addPassthroughCopy({
+    "src/_assets/css": "assets/css",
+  });
+  /* Copy fonts to the dist directory */
+  eleventyConfig.addPassthroughCopy({
+    "src/_assets/fonts": "assets/fonts",
+  });
+  /* Copy images to the dist directory */
+  eleventyConfig.addPassthroughCopy({
+    "src/_assets/img": "assets/img",
+  });
+  /* Copy js to the dist directory */
+  eleventyConfig.addPassthroughCopy({ "src/_assets/js": "assets/js" });
+
 
   // Add plugins
   eleventyConfig.addPlugin(pluginRss);
@@ -79,7 +93,7 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.setBrowserSyncConfig({
     callbacks: {
       ready: function(err, browserSync) {
-        const content_404 = fs.readFileSync('_site/404.html');
+        const content_404 = fs.readFileSync('dist/404.html');
 
         browserSync.addMiddleware("*", (req, res) => {
           // Provides the 404 content without redirect.
@@ -125,10 +139,9 @@ module.exports = function(eleventyConfig) {
 
     // These are all optional (defaults are shown):
     dir: {
-      input: ".",
-      includes: "_includes",
+      input: "src",
       data: "_data",
-      output: "_site"
+      output: "dist"
     }
   };
 };
